@@ -34,7 +34,7 @@ if [ -z "$FUNCTION_EXISTS" ]; then
     --handler index.handler \
     --zip-file fileb:///tmp/slack-notifier.zip \
     --role "arn:aws:iam::${ACCOUNT_ID}:role/lambda-role" \
-    --environment "Variables={SLACK_WEBHOOK_URL=http://localhost:8080/slack/webhook}"
+    --environment "Variables={SLACK_WEBHOOK_URL=http://wiremock:8080/slack/webhook}"
   echo "Lambda関数作成完了"
 else
   # 存在する場合はコードを更新する
@@ -43,6 +43,11 @@ else
     --region $REGION \
     --function-name $FUNCTION_NAME \
     --zip-file fileb:///tmp/slack-notifier.zip
+  # 環境変数も更新する
+  aws --endpoint-url=$ENDPOINT lambda update-function-configuration \
+    --region $REGION \
+    --function-name $FUNCTION_NAME \
+    --environment "Variables={SLACK_WEBHOOK_URL=http://wiremock:8080/slack/webhook}"
   echo "Lambda関数更新完了"
 fi
 

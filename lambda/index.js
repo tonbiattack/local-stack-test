@@ -2,6 +2,7 @@
 // SNSからディスクアラートイベントを受け取り、Slack Webhookへ通知する
 
 const https = require("https");
+const http = require("http");
 const { URL } = require("url");
 
 /**
@@ -39,6 +40,7 @@ function sendToSlack(webhookUrl, message) {
 
     const options = {
       hostname: url.hostname,
+      port: url.port || (url.protocol === "https:" ? 443 : 80),
       path: url.pathname,
       method: "POST",
       headers: {
@@ -47,7 +49,8 @@ function sendToSlack(webhookUrl, message) {
       },
     };
 
-    const req = https.request(options, (res) => {
+    const client = url.protocol === "https:" ? https : http;
+    const req = client.request(options, (res) => {
       let body = "";
       res.on("data", (chunk) => (body += chunk));
       res.on("end", () => {
