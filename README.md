@@ -65,6 +65,47 @@ aws configure
 # Default output format: json
 ```
 
+## 事前準備（初回セットアップ）
+
+プロジェクトを動かすには以下のツールが必要です。順番にインストールしてください。
+
+### 1. 必要なパッケージのインストール
+
+```bash
+# make（タスクランナー）
+sudo apt install make
+
+# zip（Lambdaパッケージの作成に使用）
+sudo apt install zip
+```
+
+### 2. AWS CLI のインストール
+
+```bash
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+unzip /tmp/awscliv2.zip -d /tmp
+sudo /tmp/aws/install
+```
+
+### 3. AWS CLI の設定（ダミー認証情報でOK）
+
+```bash
+aws configure
+# AWS Access Key ID: test
+# AWS Secret Access Key: test
+# Default region name: ap-northeast-1
+# Default output format: json
+```
+
+### 4. Docker / Docker Compose のインストール確認
+
+```bash
+docker --version
+docker compose version
+```
+
+インストールされていない場合は [Docker 公式ドキュメント](https://docs.docker.com/engine/install/ubuntu/) を参照してください。
+
 ## テストの実行
 
 ### 単体テスト（LocalStack不要）
