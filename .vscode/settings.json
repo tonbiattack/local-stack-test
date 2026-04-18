@@ -1,0 +1,5 @@
+{
+  "go.testEnvVars": {
+    "INTEGRATION_TEST": "true"
+  }
+}
