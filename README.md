@@ -194,9 +194,68 @@ aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 logs get-log-ev
 
 ## テストの段階について
 
-| テスト種別 | 対象 | 必要なもの |
+全部つないで一度に動かすと、失敗したときに原因の範囲が絞れません。
+
+例えば「Slack に通知が来ない」という現象が起きたとき、原因の候補は次のとおりです。
+
+- CronJob の閾値判定がおかしい
+- 外部 API からのディスク使用率取得が失敗している
+- SNS Publish が失敗している
+- Lambda が SNS トリガーを受け取っていない
+- Lambda が Webhook を叩いていない
+- Webhook のリクエスト形式が間違っている
+
+段階を分けると「この段階まで通っている」という確信が積み上がり、問題の範囲を絞り込めます。
+
+| テスト種別 | 確認すること | 必要なもの |
 |---|---|---|
 | 単体テスト | 閾値判定・イベント生成・文面生成のロジック | なし |
 | 結合テスト | SNS → Lambda の配線 | LocalStack |
+| E2E テスト | 全フロー・外部 API 異常系 | LocalStack + WireMock |
 
-ロジックのテストを外部依存なしで先に固めることで、結合テストで失敗したときの原因を絞り込みやすくなります。
+### 段階1：単体テスト（外部依存なし）
+
+ロジックが正しいかを確認します。Docker も LocalStack も不要なので CI で高速に実行できます。
+
+
+
+### 段階2：Lambda 結合テスト（LocalStack）
+
+SNS → Lambda の配線が正しいかを確認します。
+
+この段階で確認することは次のとおりです。
+
+- SNS の Publish で Lambda が起動するか
+- Lambda が SNS メッセージをデシリアライズできるか
+- Slack Webhook へのリクエストが発行されるか
+
+Lambda 単体の結合テストが通っていれば、Lambda と SNS の連携は問題ないと判断できます。
+E2E テストでの失敗が Lambda 側の問題でないと絞り込めます。
+
+```bash
+make up
+make deploy
+make test-integration
+```
+
+### 段階3：E2E テスト（LocalStack + WireMock）
+
+CronJob も含めた全フローを確認します。外部 API は WireMock で差し替えます。
+
+WireMock を使う理由は2つあります。接続エラーなどの異常系を安定して再現するためと、実際の外部 API へのアクセスを発生させずテストを外部サービスの状態に左右されないようにするためです。
+
+スタブ定義は `wiremock/mappings/` に置いています。
+
+```bash
+# LocalStack と WireMock を起動する
+make up-all
+make deploy
+
+# 手動でテストイベントを発行して全フローを確認する
+make publish-test
+make logs
+```
+
+なお、LocalStack は AWS 本番の完全代替ではないため、本番相当の最終確認は別途必要です。
+
+この段階的なアプローチの詳細は [LocalStack と WireMock で段階的な結合テストをする](https://qiita.com/tonbi_attack/items/localstack-wiremock) で整理しています。

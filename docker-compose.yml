@@ -15,5 +15,14 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - localstack_data:/var/lib/localstack
 
+  wiremock:
+    image: wiremock/wiremock:3.3.1
+    ports:
+      - "8080:8080"
+    volumes:
+      # スタブ定義ファイルを配置するディレクトリ
+      - ./wiremock/mappings:/home/wiremock/mappings
+    command: --verbose
+
 volumes:
   localstack_data:

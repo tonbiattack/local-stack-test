@@ -1,0 +1,11 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPattern": "/api/hosts/web-01/disk"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"host\": \"web-01\", \"usage_pct\": 92.0}",
+    "headers": { "Content-Type": "application/json" }
+  }
+}

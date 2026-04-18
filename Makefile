@@ -1,4 +1,4 @@
-.PHONY: test test-unit test-integration up down deploy publish-test logs
+.PHONY: test test-unit test-integration up up-all down deploy publish-test logs
 
 # 単体テストを実行する（LocalStack不要）
 test-unit:
@@ -11,11 +11,15 @@ test-integration:
 # 全テストを実行する
 test: test-unit test-integration
 
-# LocalStackを起動する
+# LocalStackのみ起動する
 up:
 	docker compose up -d localstack
 
-# LocalStackを停止する
+# LocalStackとWireMockを起動する（E2Eテスト用）
+up-all:
+	docker compose up -d localstack wiremock
+
+# 全サービスを停止する
 down:
 	docker compose down
 
