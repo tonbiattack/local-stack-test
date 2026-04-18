@@ -240,18 +240,27 @@ make test-integration
 
 ### 段階3：E2E テスト（LocalStack + WireMock）
 
-CronJob も含めた全フローを確認します。外部 API は WireMock で差し替えます。
+SNS → Lambda → Slack Webhook の全フローを確認します。外部 API は WireMock で差し替えます。
 
 WireMock を使う理由は2つあります。接続エラーなどの異常系を安定して再現するためと、実際の外部 API へのアクセスを発生させずテストを外部サービスの状態に左右されないようにするためです。
 
-スタブ定義は `wiremock/mappings/` に置いています。
+スタブ定義は  に置いています。
+
+確認すること：
+
+- WireMock が外部 API のスタブとして機能するか（正常系・異常系）
+- SNS Publish → Lambda 起動 → Slack Webhook 呼び出しの全フローが通るか
+- WireMock が Slack Webhook へのリクエストを受信しているか
 
 ```bash
 # LocalStack と WireMock を起動する
 make up-all
 make deploy
 
-# 手動でテストイベントを発行して全フローを確認する
+# E2E テストを実行する
+make test-e2e
+
+# 手動で確認したい場合
 make publish-test
 make logs
 ```

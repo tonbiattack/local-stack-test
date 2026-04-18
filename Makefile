@@ -1,15 +1,19 @@
-.PHONY: test test-unit test-integration up up-all down deploy publish-test logs
+.PHONY: test test-unit test-integration test-e2e up up-all down deploy publish-test logs
 
 # 単体テストを実行する（LocalStack不要）
 test-unit:
 	go test ./internal/... -v
 
-# 結合テストを実行する（LocalStackが起動している必要がある）
+# 結合テストを実行する（LocalStack必要）
 test-integration:
-	INTEGRATION_TEST=true go test ./integration/... -v -timeout 30s
+	INTEGRATION_TEST=true go test ./integration/... -run "TestSNS" -v -timeout 30s
+
+# E2Eテストを実行する（LocalStack + WireMock必要）
+test-e2e:
+	INTEGRATION_TEST=true go test ./integration/... -run "TestDiskAPI|TestFullFlow" -v -timeout 60s
 
 # 全テストを実行する
-test: test-unit test-integration
+test: test-unit test-integration test-e2e
 
 # LocalStackのみ起動する
 up:
