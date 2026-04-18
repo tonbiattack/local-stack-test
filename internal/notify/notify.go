@@ -6,7 +6,7 @@ import (
 
 	"github.com/tonbiattack/localstack-test/internal/alert"
 )
-
+	
 // SlackMessage はSlack Webhookへ送信するメッセージ構造体
 type SlackMessage struct {
 	Text        string       `json:"text"`
