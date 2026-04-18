@@ -145,6 +145,53 @@ make publish-test
 make logs
 ```
 
+## CLI でのリソース確認
+
+LocalStack 起動中に以下のコマンドでリソースの状態を確認できます。
+`--endpoint-url=http://localhost:4566` を付けることで LocalStack に向けて操作します。
+
+### LocalStack の起動確認
+
+```bash
+curl http://localhost:4566/_localstack/health
+```
+
+### SNS
+
+```bash
+# トピック一覧
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 sns list-topics
+
+# サブスクリプション一覧
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 sns list-subscriptions
+```
+
+### Lambda
+
+```bash
+# 関数一覧
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 lambda list-functions
+
+# 関数の詳細
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 lambda get-function --function-name slack-notifier
+```
+
+### CloudWatch Logs（Lambdaのログ）
+
+```bash
+# ロググループ一覧
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 logs describe-log-groups
+
+# 最新のログストリーム一覧
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 logs describe-log-streams \
+  --log-group-name /aws/lambda/slack-notifier
+
+# ログの中身を確認（<log-stream-name> は上のコマンドで取得したもの）
+aws --endpoint-url=http://localhost:4566 --region ap-northeast-1 logs get-log-events \
+  --log-group-name /aws/lambda/slack-notifier \
+  --log-stream-name "<log-stream-name>"
+```
+
 ## テストの段階について
 
 | テスト種別 | 対象 | 必要なもの |
