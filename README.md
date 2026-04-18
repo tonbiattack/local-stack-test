@@ -89,12 +89,14 @@ sudo /tmp/awscli/aws/install
 
 ### 3. AWS CLI の設定（ダミー認証情報でOK）
 
+LocalStack はダミーの認証情報でも動作します。`Default output format` は必ず `json` にしてください。
+
 ```bash
 aws configure
-# AWS Access Key ID: test
-# AWS Secret Access Key: test
-# Default region name: ap-northeast-1
-# Default output format: json
+# AWS Access Key ID [None]: test
+# AWS Secret Access Key [None]: test
+# Default region name [None]: ap-northeast-1
+# Default output format [None]: json   ← json と入力すること（空白や他の値は不可）
 ```
 
 ### 4. Docker / Docker Compose のインストール確認
