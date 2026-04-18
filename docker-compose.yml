@@ -1,0 +1,19 @@
+services:
+  localstack:
+    image: localstack/localstack:3
+    ports:
+      - "4566:4566"
+    environment:
+      # 使用するAWSサービスを列挙する
+      - SERVICES=sns,lambda,sqs,ssm,secretsmanager,logs,iam
+      - DEFAULT_REGION=ap-northeast-1
+      # Lambda関数のログをCloudWatch Logsへ出力する
+      - LAMBDA_EXECUTOR=docker
+      # LocalStack起動時にセットアップスクリプトを実行する
+    volumes:
+      - ./scripts/init-localstack.sh:/etc/localstack/init/ready.d/init.sh
+      - /var/run/docker.sock:/var/run/docker.sock
+      - localstack_data:/var/lib/localstack
+
+volumes:
+  localstack_data:
